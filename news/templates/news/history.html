@@ -131,7 +131,12 @@
     <header>
       <h1>📋 나의 요약 히스토리</h1>
       <p>저장한 뉴스 요약 목록입니다</p>
-      <a href="{% url 'index' %}" class="nav-link">← 뉴스 큐레이션으로 돌아가기</a>
+      <div style="margin-top:0.75rem; display:flex; justify-content:center; align-items:center; gap:1rem; flex-wrap:wrap;">
+        <a href="{% url 'index' %}" class="nav-link">← 뉴스 큐레이션으로 돌아가기</a>
+        <span style="color:#cbd5e0; font-size:0.875rem;">|</span>
+        <span style="font-size:0.875rem; color:#4a5568;">👤 {{ request.user.username }}</span>
+        <a href="{% url 'logout' %}" class="nav-link" style="color:#e53e3e;">로그아웃</a>
+      </div>
     </header>
 
     {% if articles %}
