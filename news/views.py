@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .forms import StyledUserCreationForm
 from django.views.decorators.http import require_POST
 from .services import search_naver_news, curate_articles
 from .models import SavedArticle
@@ -22,6 +23,19 @@ def login_view(request):
             error = "아이디 또는 비밀번호가 올바르지 않습니다."
 
     return render(request, "news/login.html", {"error": error})
+
+
+def signup_view(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+
+    form = StyledUserCreationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect("index")
+
+    return render(request, "news/signup.html", {"form": form})
 
 
 def logout_view(request):
