@@ -23,9 +23,9 @@ def search_naver_news(keyword: str, display: int = 20) -> list[dict]:
     articles = []
     for item in data.get("items", []):
         articles.append({
-            "title": _strip_html(item["title"]),
-            "description": _strip_html(item["description"]),
-            "link": item["link"],
+            "title": _strip_html(item.get("title", "")),
+            "description": _strip_html(item.get("description", "")),
+            "link": item.get("link", ""),
             "pub_date": item.get("pubDate", ""),
         })
     return articles
@@ -81,4 +81,4 @@ def curate_articles(articles: list[dict], filter_prompt: str) -> list[dict]:
 
 
 def _strip_html(text: str) -> str:
-    return re.sub(r"<[^>]+>", "", text)
+    return re.sub(r"<[^>]+>", "", text or "")
