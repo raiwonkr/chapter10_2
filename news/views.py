@@ -1,5 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.decorators.http import require_POST
 from .services import search_naver_news, curate_articles
+from .models import SavedArticle
 
 
 def index(request):
@@ -20,3 +22,20 @@ def index(request):
                 context["error"] = str(e)
 
     return render(request, "news/index.html", context)
+
+
+@require_POST
+def save_article(request):
+    SavedArticle.objects.create(
+        title=request.POST.get("title", ""),
+        reason=request.POST.get("reason", ""),
+        summary=request.POST.get("summary", ""),
+        link=request.POST.get("link", ""),
+        pub_date=request.POST.get("pub_date", ""),
+    )
+    return redirect("history")
+
+
+def history(request):
+    articles = SavedArticle.objects.all()
+    return render(request, "news/history.html", {"articles": articles})
