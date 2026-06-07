@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 대시보드 — AI 뉴스 큐레이션</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen font-sans">
+
+  <!-- 헤더 -->
+  <header class="bg-white border-b border-slate-200 shadow-sm">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl">🗂️</span>
+        <div>
+          <h1 class="text-lg font-bold text-slate-800">관리자 대시보드</h1>
+          <p class="text-xs text-slate-400">AI 뉴스 큐레이션 서비스</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-500">👤 {{ request.user.username }}</span>
+        <a href="{% url 'index' %}"
+           class="text-sm text-indigo-500 hover:text-indigo-700 font-medium transition">
+          ← 서비스로 돌아가기
+        </a>
+        <a href="{% url 'logout' %}"
+           class="text-sm text-red-400 hover:text-red-600 font-medium transition">
+          로그아웃
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+
+    <!-- 통계 카드 -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+
+      <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-5 border border-slate-100">
+        <div class="w-14 h-14 rounded-xl bg-indigo-100 flex items-center justify-center text-2xl flex-shrink-0">
+          👥
+        </div>
+        <div>
+          <p class="text-sm text-slate-400 font-medium">총 회원 수</p>
+          <p class="text-4xl font-extrabold text-indigo-600 mt-0.5">{{ total_users }}</p>
+          <p class="text-xs text-slate-400 mt-1">명의 사용자가 가입했습니다</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl shadow-sm p-6 flex items-center gap-5 border border-slate-100">
+        <div class="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center text-2xl flex-shrink-0">
+          📰
+        </div>
+        <div>
+          <p class="text-sm text-slate-400 font-medium">전체 저장 기사 수</p>
+          <p class="text-4xl font-extrabold text-emerald-600 mt-0.5">{{ total_articles }}</p>
+          <p class="text-xs text-slate-400 mt-1">건의 기사가 저장되었습니다</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 최근 데이터 테이블 -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="text-base font-bold text-slate-700">최근 저장된 기사 20건</h2>
+        <span class="text-xs bg-indigo-50 text-indigo-500 font-semibold px-3 py-1 rounded-full">
+          {{ recent_articles|length }}건
+        </span>
+      </div>
+
+      {% if recent_articles %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-slate-50 text-slate-400 text-xs uppercase tracking-wider">
+              <th class="px-6 py-3 text-left font-semibold w-8">#</th>
+              <th class="px-6 py-3 text-left font-semibold">작성자</th>
+              <th class="px-6 py-3 text-left font-semibold">기사 제목</th>
+              <th class="px-6 py-3 text-left font-semibold">AI 요약</th>
+              <th class="px-6 py-3 text-left font-semibold whitespace-nowrap">저장 시각</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-50">
+            {% for article in recent_articles %}
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 text-slate-300 font-mono text-xs">{{ forloop.counter }}</td>
+              <td class="px-6 py-4">
+                <span class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-600 text-xs font-semibold px-2.5 py-1 rounded-full">
+                  👤 {{ article.user.username|default:"(삭제된 유저)" }}
+                </span>
+              </td>
+              <td class="px-6 py-4 max-w-xs">
+                <a href="{{ article.link }}" target="_blank" rel="noopener"
+                   class="text-slate-700 font-medium hover:text-indigo-500 transition line-clamp-2">
+                  {{ article.title }}
+                </a>
+              </td>
+              <td class="px-6 py-4 max-w-sm">
+                <p class="text-slate-400 text-xs leading-relaxed line-clamp-2">{{ article.summary }}</p>
+              </td>
+              <td class="px-6 py-4 text-slate-400 text-xs whitespace-nowrap">
+                {{ article.saved_at|date:"Y.m.d H:i" }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-16 text-slate-400">
+        <div class="text-4xl mb-3">📭</div>
+        <p>아직 저장된 기사가 없습니다.</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </main>
+</body>
+</html>

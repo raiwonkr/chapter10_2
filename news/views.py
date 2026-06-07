@@ -1,10 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from .forms import StyledUserCreationForm
 from django.views.decorators.http import require_POST
 from .services import search_naver_news, curate_articles
 from .models import SavedArticle
+
+
+def staff_required(view_func):
+    return user_passes_test(lambda u: u.is_active and u.is_staff, login_url="login")(view_func)
 
 
 def login_view(request):
@@ -84,3 +89,15 @@ def save_article(request):
 def history(request):
     articles = SavedArticle.objects.filter(user=request.user)
     return render(request, "news/history.html", {"articles": articles})
+
+
+@staff_required
+def dashboard(request):
+    total_users = User.objects.count()
+    total_articles = SavedArticle.objects.count()
+    recent_articles = SavedArticle.objects.select_related("user").order_by("-saved_at")[:20]
+    return render(request, "news/dashboard.html", {
+        "total_users": total_users,
+        "total_articles": total_articles,
+        "recent_articles": recent_articles,
+    })
