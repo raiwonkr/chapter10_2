@@ -18,6 +18,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user:
             login(request, user)
+            if user.is_superuser:
+                return redirect("admin:index")
             return redirect(request.GET.get("next", "index"))
         else:
             error = "아이디 또는 비밀번호가 올바르지 않습니다."
