@@ -38,7 +38,8 @@ IS_PRODUCTION = not DEBUG
 SECURE_HSTS_SECONDS = 31536000 if IS_PRODUCTION else 0          # W004
 SECURE_HSTS_INCLUDE_SUBDOMAINS = IS_PRODUCTION                  # W004
 SECURE_HSTS_PRELOAD = IS_PRODUCTION                             # W004
-SECURE_SSL_REDIRECT = IS_PRODUCTION                             # W008
+SECURE_SSL_REDIRECT = False                                     # Railway 프록시가 HTTPS 처리
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # 프록시 신뢰
 SESSION_COOKIE_SECURE = IS_PRODUCTION                           # W012
 CSRF_COOKIE_SECURE = IS_PRODUCTION                              # W016
 
